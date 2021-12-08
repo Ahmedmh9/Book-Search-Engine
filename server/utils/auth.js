@@ -5,7 +5,7 @@ const secret = "mysecretsshhhhh";
 const expiration = "2h";
 
 module.exports = {
-  // function for our authenticated routes
+  // function for our authenticated routess
   authMiddleware: function ({ req }) {
     // allows token to be sent via  req.query or headers
     let token = req.body.token || req.query.token || req.headers.authorization;
@@ -16,7 +16,8 @@ module.exports = {
     }
 
     if (!token) {
-      return { message: "You have no token!" };
+      // return res.status(400).json({ message: 'You have no token!' });
+      return req;
     }
 
     // verify token and get user data out of it
@@ -24,11 +25,14 @@ module.exports = {
       const { data } = jwt.verify(token, secret, { maxAge: expiration });
       req.user = data;
     } catch {
-      console.log("Invalid or bad formatted token");
+      console.log("Invalid token");
+      return res.status(400).json({ message: "invalid token!" });
     }
+
+    // send to next endpoint
+    // next();
     return req;
   },
-
   signToken: function ({ username, email, _id }) {
     const payload = { username, email, _id };
 

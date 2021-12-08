@@ -1,10 +1,13 @@
 import React, { useState } from "react";
 import { Form, Button, Alert } from "react-bootstrap";
 
-
+//import { createUser } from '../utils/API';
 import Auth from "../utils/auth";
-import { ADD_USER } from "../utils/mutation";
-import {useMutation} from '@apollo/react-hooks';
+//TODO: set up ADD_USER reference from mutation.js file
+import { ADD_USER } from "../utils/mutations";
+//TODO: set up useMutation
+import { useMutation } from "@apollo/react-hooks";
+
 const SignupForm = () => {
   // set initial form state
   const [userFormData, setUserFormData] = useState({
@@ -16,8 +19,8 @@ const SignupForm = () => {
   const [validated] = useState(false);
   // set state for alert
   const [showAlert, setShowAlert] = useState(false);
-
-  const [addUser, { error }] = useMutation(ADD_USER);
+  //TODO: set addUser mutation
+  const [addUser] = useMutation(ADD_USER);
 
   const handleInputChange = (event) => {
     const { name, value } = event.target;
@@ -33,14 +36,23 @@ const SignupForm = () => {
       event.preventDefault();
       event.stopPropagation();
     }
-
+    //TODO:
     try {
-      const { data } = await addUser({
-        variables: { ...userFormData },
-      });
+      //const response = await createUser(userFormData);
+      //set up useMutation hook
+      const { data } = await addUser({ variables: userFormData });
+      console.log(data);
+
+      if (!data) {
+        throw new Error("something went wrong!");
+      }
+
+      //pass in token recevied from mutation response
       Auth.login(data.addUser.token);
+      //part of mutation use
+      window.location.reload();
     } catch (err) {
-      console.error(error);
+      console.error(err);
       setShowAlert(true);
     }
 
